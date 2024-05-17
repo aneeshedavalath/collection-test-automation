@@ -1,0 +1,39 @@
+name: Run Multiple Collection Tests
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  run-multiple-collection-tests:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        collection:
+          - pos
+          - pos-duplicate
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js environment
+        uses: actions/setup-node@v4.0.2
+        with:
+          node-version: '20'
+
+      - name: Install Bruno CLI
+        run: npm install -g @usebruno/cli
+
+      - name: Run multiple collections tests
+        run: bru run --env qa --env-var password=${{ secrets.PASSWORD }} -o results-${{ matrix.collection }}.html -f html --tests-only
+        working-directory: collections/${{ matrix.collection }}
+        continue-on-error: true
+
+      - name: Upload test results
+        uses: actions/upload-artifact@v3
+        with:
+          name: test-results-${{ matrix.collection }}
+          path: collections/${{ matrix.collection }}/results-${{ matrix.collection }}.html
