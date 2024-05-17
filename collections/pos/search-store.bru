@@ -1,0 +1,32 @@
+meta {
+  name: search-store
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{host}}/v1/stores/search?size=10&page=0&searchTerm=&active=&type=&sortParam=
+  body: none
+  auth: inherit
+}
+
+query {
+  size: 10
+  page: 0
+  searchTerm: 
+  active: 
+  type: 
+  sortParam: 
+}
+
+headers {
+  Authorization: Bearer null
+}
+
+tests {
+  test("Search store", function() {
+    const data = res.getBody();
+    expect(data).to.not.be.null;
+    expect(res.getStatus()).to.equal(200);
+  });
+}

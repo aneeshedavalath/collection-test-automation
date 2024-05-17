@@ -1,0 +1,37 @@
+auth {
+  mode: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+script:pre-request {
+  const axios = require('axios');
+  
+  async function getToken() {
+    const url = 'https://auth-qa.mozcomonline.com/v1/auth/token';
+    const requestBody = {
+      username: bru.getEnvVar('username'),
+      password: bru.getEnvVar('password'),
+      grantType: "Password",
+      appId: "AMB_COM"
+    };
+  
+    try {
+      const response = await axios.post(url, requestBody, {
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+  
+      const token = response.data.token;
+      bru.setEnvVar('token', token);
+    } catch (error) {
+      throw new Error('Pre-request script failed to fetch token');
+    }
+  }
+  
+  await getToken();
+  
+}

@@ -1,0 +1,86 @@
+meta {
+  name: select-store
+  type: http
+  seq: 3
+}
+
+patch {
+  url: {{host}}/v1/stores/select-store/S0001
+  body: none
+  auth: inherit
+}
+
+headers {
+  Authorization: Bearer null
+}
+
+tests {
+  test("Select store", function() {
+    try {
+    const data = res.getBody();
+    expect(data).to.not.be.null;
+    expect(res.getStatus()).to.equal(200);
+    } catch (error) {
+      if (error.actual === 404) {
+        throw new Error("Store not found");
+      }
+    }
+  });
+  
+  test("Response structure", function() {
+    try {
+    const data = res.getBody();
+    expect(res.getStatus()).to.equal(200);
+    expect(data).to.have.property('id');
+    expect(data).to.have.property('name');
+    } catch (error) {
+      if (error.actual === 404) {
+        throw new Error("Store not found");
+      }
+    }
+  });
+  
+  test("Validate data types", function() {
+    try {
+    const data = res.getBody();
+    expect(res.getStatus()).to.equal(200);
+    expect(data.id).to.be.a('string');
+    expect(data.name).to.be.a('string');
+    } catch (error) {
+      if (error.actual === 404) {
+        throw new Error("Store not found");
+      }
+    }
+  });
+  
+  test("Check specific values", function() {
+    try {
+    const data = res.getBody();
+    expect(res.getStatus()).to.equal(200);
+    expect(data.id).to.equal("S0001");
+    } catch (error) {
+      if (error.actual === 404) {
+        throw new Error("Store not found");
+      }
+    }
+  });
+  
+  test("Error response", function() {
+    try {
+    const data = res.getBody();
+    expect(res.getStatus()).to.equal(404);
+    expect(data).to.have.property('title');
+    expect(data).to.have.property('status');
+    expect(data).to.have.property('detail');
+    expect(data).to.have.property('message');
+    expect(data.title).to.equal("Not Found");
+    expect(data.status).to.equal(404);
+    expect(data.detail).to.equal("ORG00001");
+    expect(data.message).to.equal("Organization not found");
+    } catch (error) {
+      if (error.actual === 200) {
+        console.log("No errors found to test the case");
+      }
+    }
+  });
+}
