@@ -1,0 +1,33 @@
+name: Run Single Collection Tests
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  run-single-collection-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js environment
+        uses: actions/setup-node@v4.0.2
+        with:
+          node-version: '20'
+
+      - name: Install Bruno CLI
+        run: npm install -g @usebruno/cli
+
+      - name: Run single collection tests
+        run: bru run --env qa --env-var password=${{ secrets.PASSWORD }} -o results.html -f html --tests-only
+        working-directory: collections/pos
+        continue-on-error: true
+
+      - name: Upload test results
+        uses: actions/upload-artifact@v3
+        with:
+          name: test-results
+          path: collections/pos/results.html
